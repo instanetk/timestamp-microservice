@@ -3,9 +3,7 @@ const { DateTime } = require("luxon");
 const app = express();
 
 app.get("/api/timestamp/:year/:month/:day", (req, res) => {
-  const year = req.params.year;
-  const month = req.params.month;
-  const day = req.params.day;
+  const { year, month, day } = req.params;
 
   let time = {
     year,
@@ -20,6 +18,51 @@ app.get("/api/timestamp/:year/:month/:day", (req, res) => {
 
   if (!date.isValid)
     return res.status(400).send("Invalid time format. YYYY/MM/DD");
+
+  res.send({ unix, utc });
+});
+app.get("/api/timestamp/:year/:month", (req, res) => {
+  const { year, month } = req.params;
+
+  let time = {
+    year,
+    month,
+    zone: "utc",
+  };
+
+  const date = DateTime.fromObject(time);
+  const unix = date.toMillis();
+  const utc = date.toHTTP();
+
+  if (!date.isValid)
+    return res.status(400).send("Invalid time format. YYYY/MM/DD");
+
+  res.send({ unix, utc });
+});
+app.get("/api/timestamp/:year", (req, res) => {
+  const { year } = req.params;
+
+  let time = {
+    year,
+    zone: "utc",
+  };
+
+  let date;
+  let unix;
+  let utc;
+
+  if (year.length === 4) {
+    date = DateTime.fromObject(time);
+    unix = date.toMillis();
+    utc = date.toHTTP();
+  } else if (year.length > 4) {
+    date = DateTime.fromMillis(parseInt(year));
+    unix = date.toMillis();
+    utc = date.toHTTP();
+  }
+
+  if (!date.isValid)
+    return res.status(400).send("Invalid time format. Year has 4 digits.");
 
   res.send({ unix, utc });
 });
