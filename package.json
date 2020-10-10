@@ -1,0 +1,21 @@
+{
+  "name": "timestamp-microservice",
+  "version": "1.0.0",
+  "description": "Take a date format in the URL parameters and output an object with the following example output: {\"unix\":1451001600000, \"utc\":\"Fri, 25 Dec 2015 00:00:00 GMT\"}",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest "
+  },
+  "keywords": [
+    "timestamp",
+    "microserver",
+    "node",
+    "api"
+  ],
+  "author": "David Quintero",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "luxon": "^1.25.0"
+  }
+}
