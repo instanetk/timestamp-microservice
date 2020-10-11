@@ -3,11 +3,14 @@ const { DateTime } = require("luxon");
 const app = express();
 
 app.get("/api/timestamp/", (req, res) => {
-  const date = DateTime.local();
-  const unix = date.toMillis();
-  const utc = date.toHTTP();
-
-  res.send({ unix, utc });
+  try {
+    const date = DateTime.local();
+    const unix = date.toMillis();
+    const utc = date.toHTTP();
+    res.send({ unix, utc });
+  } catch (ex) {
+    return res.status(400).send({ error: "Invalid Date" });
+  }
 });
 
 app.get("/api/timestamp/:year/:month/:day", (req, res) => {
@@ -26,7 +29,7 @@ app.get("/api/timestamp/:year/:month/:day", (req, res) => {
     const utc = date.toHTTP();
     res.send({ unix, utc });
   } catch (ex) {
-    return res.status(200).send({ error: "Invalid Date" });
+    return res.status(400).send({ error: "Invalid Date" });
   }
 });
 
@@ -45,14 +48,14 @@ app.get("/api/timestamp/:year/:month", (req, res) => {
     const utc = date.toHTTP();
     res.send({ unix, utc });
   } catch (ex) {
-    return res.status(200).send({ error: "Invalid Date" });
+    return res.status(400).send({ error: "Invalid Date" });
   }
 });
-app.get("/api/timestamp/:year", (req, res) => {
-  const { year } = req.params;
+app.get("/api/timestamp/:date_string", (req, res) => {
+  const { date_string } = req.params;
 
   let time = {
-    year,
+    date_string,
     zone: "utc",
   };
 
@@ -60,15 +63,25 @@ app.get("/api/timestamp/:year", (req, res) => {
   let unix;
   let utc;
 
+  let regex = /^[0-9]*$/;
+
+  let dateObject = new Date(date_string);
+
   try {
-    if (year.length === 4) {
-      date = DateTime.fromObject(time);
+    if (DateTime.fromISO(date_string).isValid) {
+      date = DateTime.fromISO(date_string);
       unix = date.toMillis();
       utc = date.toHTTP();
-    } else if (year.length > 4) {
-      date = DateTime.fromMillis(parseInt(year));
+      console.log("case 1");
+    } else if (regex.test(date_string) && dateObject !== "Invalid Date") {
+      date = DateTime.fromMillis(parseInt(date_string));
       unix = date.toMillis();
       utc = date.toHTTP();
+      console.log("case 2");
+    } else {
+      console.log("case 3");
+
+      return res.status(400).send({ error: "Invalid Date" });
     }
     res.send({ unix, utc });
   } catch (ex) {
