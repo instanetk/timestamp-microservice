@@ -9,7 +9,7 @@ app.get("/api/timestamp/", (req, res) => {
     const utc = date.toHTTP();
     res.send({ unix, utc });
   } catch (ex) {
-    return res.status(400).send({ error: "Invalid Date" });
+    return res.send({ error: "Invalid Date" });
   }
 });
 
@@ -29,7 +29,7 @@ app.get("/api/timestamp/:year/:month/:day", (req, res) => {
     const utc = date.toHTTP();
     res.send({ unix, utc });
   } catch (ex) {
-    return res.status(400).send({ error: "Invalid Date" });
+    return res.send({ error: "Invalid Date" });
   }
 });
 
@@ -48,7 +48,7 @@ app.get("/api/timestamp/:year/:month", (req, res) => {
     const utc = date.toHTTP();
     res.send({ unix, utc });
   } catch (ex) {
-    return res.status(400).send({ error: "Invalid Date" });
+    return res.send({ error: "Invalid Date" });
   }
 });
 app.get("/api/timestamp/:date_string", (req, res) => {
@@ -72,20 +72,16 @@ app.get("/api/timestamp/:date_string", (req, res) => {
       date = DateTime.fromISO(date_string);
       unix = date.toMillis();
       utc = date.toHTTP();
-      console.log("case 1");
     } else if (regex.test(date_string) && dateObject !== "Invalid Date") {
       date = DateTime.fromMillis(parseInt(date_string));
       unix = date.toMillis();
       utc = date.toHTTP();
-      console.log("case 2");
     } else {
-      console.log("case 3");
-
-      return res.status(400).send({ error: "Invalid Date" });
+      return res.send({ error: "Invalid Date" });
     }
     res.send({ unix, utc });
   } catch (ex) {
-    return res.status(400).send({ error: "Invalid Date" });
+    return res.send({ error: "Invalid Date" });
   }
 });
 
